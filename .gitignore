@@ -1,0 +1,18 @@
+# Ignore Windows junk
+Thumbs.db
+*.log
+
+# Backend bin folders
+backend/bin/
+backend/obj/
+backend/.vs/
+backend/RMP_Backend.csproj.user
+
+# React cache & build
+frontend/node_modules/
+frontend/dist/
+
+# Environment files
+*.env
+backend/appsettings.Development.json
+backend/appsettings.Local.json
