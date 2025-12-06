@@ -26,44 +26,61 @@ namespace RMP_backend.Controllers
 
         // ---------------- REGISTER ----------------
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterDto dto)
+public async Task<IActionResult> Register(RegisterDto dto)
+{
+    if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
+        return BadRequest("Email already registered.");
+
+    PasswordHelper.CreatePasswordHash(dto.Password, out var hash, out var salt);
+
+    var user = new User
+    {
+        FullName = dto.FullName,
+        Email = dto.Email,
+        Phone = dto.Phone,
+        PasswordHash = hash,
+        PasswordSalt = salt,
+        IsActive = true
+    };
+
+    // Assign Role
+    var role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == dto.RoleName);
+    if (role == null)
+    {
+        role = new Role { RoleName = dto.RoleName };
+        _context.Roles.Add(role);
+        await _context.SaveChangesAsync();
+    }
+
+    _context.Users.Add(user);
+    await _context.SaveChangesAsync();
+
+    _context.UserRoles.Add(new UserRole
+    {
+        UserId = user.UserId,
+        RoleId = role.RoleId
+    });
+    await _context.SaveChangesAsync();
+
+    // ✅ If user is Candidate, create entry in Candidates table
+    if (dto.RoleName.Equals("Candidate", StringComparison.OrdinalIgnoreCase))
+    {
+        var candidate = new Candidate
         {
-            if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
-                return BadRequest("Email already registered.");
+            FullName = dto.FullName,
+            Email = dto.Email,
+            Phone = dto.Phone,
+            CreatedDate = DateTime.UtcNow,
+            Status = RMP_backend.Models.Enums.CandidateStatus.Applied
+        };
 
-            PasswordHelper.CreatePasswordHash(dto.Password, out var hash, out var salt);
+        _context.Candidates.Add(candidate);
+        await _context.SaveChangesAsync();
+    }
 
-            var user = new User
-            {
-                FullName = dto.FullName,
-                Email = dto.Email,
-                Phone = dto.Phone,
-                PasswordHash = hash,
-                PasswordSalt = salt,
-                IsActive = true
-            };
+    return Ok("User registered successfully");
+}
 
-            // Assign Role
-            var role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == dto.RoleName);
-            if (role == null)
-            {
-                role = new Role { RoleName = dto.RoleName };
-                _context.Roles.Add(role);
-                await _context.SaveChangesAsync();
-            }
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            _context.UserRoles.Add(new UserRole
-            {
-                UserId = user.UserId,
-                RoleId = role.RoleId
-            });
-            await _context.SaveChangesAsync();
-
-            return Ok("User registered successfully");
-        }
 
         // ---------------- LOGIN ----------------
         [HttpPost("login")]

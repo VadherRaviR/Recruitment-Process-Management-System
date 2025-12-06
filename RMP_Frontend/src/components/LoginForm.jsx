@@ -1,7 +1,9 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../auth/AuthContext";
 import api from "../api/axiosInstance";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; 
+import { jwtDecode } from "jwt-decode";
+
 
 export default function LoginForm() {
   const { login } = useContext(AuthContext);
@@ -16,7 +18,14 @@ export default function LoginForm() {
     try {
       const res = await api.post("/auth/login", form);
       login(res.data.token);
-      navigate("/dashboard");
+      const decoded = jwtDecode(res.data.token);
+      console.log(decoded);
+      if ( decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]=== "Candidate") {
+      navigate("/candidate/dashboard");
+   } 
+   else if ( decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]=== "HR") {
+      navigate("/hr/dashboard");
+   }
     } catch {
       setError("Invalid email or password");
     }

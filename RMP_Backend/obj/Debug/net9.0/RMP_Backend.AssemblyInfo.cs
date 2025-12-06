@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RMP_Backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4dee7f2a71a1c9611cb849ad5a56a2c1c64a5943")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a36e770ca5485b250f31fb502446bf352f9a35a7")]
 [assembly: System.Reflection.AssemblyProductAttribute("RMP_Backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RMP_Backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
