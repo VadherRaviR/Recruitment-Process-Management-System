@@ -119,7 +119,6 @@ public async Task<IActionResult> UpdateCandidateStatus(
     }
     catch (Exception ex)
     {
-        // 👇 THIS WILL TELL US THE REAL ERROR
         return StatusCode(500, new
         {
             message = "Internal server error",
