@@ -25,6 +25,8 @@ export default function LoginForm() {
    } 
    else if ( decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]=== "HR") {
       navigate("/hr/dashboard");
+   }else if ( decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]=== "Admin") {
+      navigate("/recruiter/dashboard");
    }
     } catch {
       setError("Invalid email or password");

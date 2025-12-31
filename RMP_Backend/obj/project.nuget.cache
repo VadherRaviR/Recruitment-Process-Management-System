@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "QNxUHPtIZTY=",
+  "dgSpecHash": "YA/d07ZMBaA=",
   "success": true,
-  "projectFilePath": "C:\\Users\\RAVI R VADHER\\Desktop\\PreTask\\project\\rmp_backend\\RMP_Backend.csproj",
+  "projectFilePath": "C:\\Users\\RAVI R VADHER\\Desktop\\PreTask\\Project\\RMP_Backend\\RMP_Backend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\RAVI R VADHER\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\RAVI R VADHER\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",

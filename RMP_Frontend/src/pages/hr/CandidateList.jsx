@@ -9,7 +9,7 @@ export default function CandidateList() {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await api.get("/hr/candidates"); // GET /hr/candidates
+        const res = await api.get("/hr/candidates"); 
         setCandidates(res.data || []);
       } catch (err) {
         console.error("Load candidates error", err);

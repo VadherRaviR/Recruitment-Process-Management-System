@@ -3,12 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace RMP_backend.Models.Entities
 {
     public class InterviewPanel
-    {
-        public int InterviewId { get; set; }   // FK + PK part
-        public int InterviewerId { get; set; } // FK + PK part
+{
+    public int InterviewId { get; set; }   // PK + FK
+    public Interview Interview { get; set; }
 
-        
-        public Interview Interview { get; set; }
-        public User Interviewer { get; set; }
-    }
+    public int InterviewerId { get; set; } // PK + FK
+    public User Interviewer { get; set; }
+}
 }

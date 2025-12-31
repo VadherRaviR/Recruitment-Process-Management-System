@@ -6,7 +6,7 @@ const AdminDashboard = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  
+
   const handleLogout = () => {
     logout();
     navigate("/login");

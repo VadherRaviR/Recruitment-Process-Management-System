@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace RMP_backend.Models.DTOs.Jobs
 {
@@ -10,12 +11,11 @@ namespace RMP_backend.Models.DTOs.Jobs
         public string Department { get; set; }
         public int ExperienceRequired { get; set; }
         public string Status { get; set; }
-        public int CreatedById { get; set; }
         public string CreatedByName { get; set; }
+        public int CreatedById { get; set; }
         public DateTime CreatedDate { get; set; }
 
-        // Extra helpful fields for UI:
-        public int ApplicantsCount { get; set; }
-        public string Skills { get; set; }
+        public List<SkillResponseDto> RequiredSkills { get; set; } = new();
+        public List<SkillResponseDto> PreferredSkills { get; set; } = new();
     }
 }

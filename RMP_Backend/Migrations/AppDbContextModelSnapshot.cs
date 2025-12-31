@@ -317,7 +317,7 @@ namespace RMP_Backend.Migrations
                     b.ToTable("Jobs");
                 });
 
-            modelBuilder.Entity("RMP_backend.Models.Entities.JobSkill", b =>
+            modelBuilder.Entity("RMP_backend.Models.Entities.JobPreferredSkill", b =>
                 {
                     b.Property<int>("JobId")
                         .HasColumnType("int");
@@ -325,14 +325,32 @@ namespace RMP_Backend.Migrations
                     b.Property<int>("SkillId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Importance")
+                    b.Property<int>("Weightage")
                         .HasColumnType("int");
 
                     b.HasKey("JobId", "SkillId");
 
                     b.HasIndex("SkillId");
 
-                    b.ToTable("JobSkills");
+                    b.ToTable("JobPreferredSkills");
+                });
+
+            modelBuilder.Entity("RMP_backend.Models.Entities.JobRequiredSkill", b =>
+                {
+                    b.Property<int>("JobId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SkillId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Weightage")
+                        .HasColumnType("int");
+
+                    b.HasKey("JobId", "SkillId");
+
+                    b.HasIndex("SkillId");
+
+                    b.ToTable("JobRequiredSkills");
                 });
 
             modelBuilder.Entity("RMP_backend.Models.Entities.Notification", b =>
@@ -488,10 +506,14 @@ namespace RMP_Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SkillId"));
 
-                    b.Property<string>("SkillName")
+                    b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.HasKey("SkillId");
 
@@ -745,16 +767,35 @@ namespace RMP_Backend.Migrations
                     b.Navigation("CreatedBy");
                 });
 
-            modelBuilder.Entity("RMP_backend.Models.Entities.JobSkill", b =>
+            modelBuilder.Entity("RMP_backend.Models.Entities.JobPreferredSkill", b =>
                 {
                     b.HasOne("RMP_backend.Models.Entities.Job", "Job")
-                        .WithMany("JobSkills")
+                        .WithMany("PreferredSkills")
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("RMP_backend.Models.Entities.Skill", "Skill")
-                        .WithMany("JobSkills")
+                        .WithMany("JobPreferredSkills")
+                        .HasForeignKey("SkillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Job");
+
+                    b.Navigation("Skill");
+                });
+
+            modelBuilder.Entity("RMP_backend.Models.Entities.JobRequiredSkill", b =>
+                {
+                    b.HasOne("RMP_backend.Models.Entities.Job", "Job")
+                        .WithMany("RequiredSkills")
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RMP_backend.Models.Entities.Skill", "Skill")
+                        .WithMany("JobRequiredSkills")
                         .HasForeignKey("SkillId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -899,9 +940,11 @@ namespace RMP_Backend.Migrations
 
                     b.Navigation("Interviews");
 
-                    b.Navigation("JobSkills");
-
                     b.Navigation("OfferLetters");
+
+                    b.Navigation("PreferredSkills");
+
+                    b.Navigation("RequiredSkills");
                 });
 
             modelBuilder.Entity("RMP_backend.Models.Entities.Review", b =>
@@ -918,7 +961,9 @@ namespace RMP_Backend.Migrations
                 {
                     b.Navigation("CandidateSkills");
 
-                    b.Navigation("JobSkills");
+                    b.Navigation("JobPreferredSkills");
+
+                    b.Navigation("JobRequiredSkills");
 
                     b.Navigation("ReviewSkills");
                 });

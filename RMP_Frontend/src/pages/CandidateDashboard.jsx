@@ -8,7 +8,6 @@ export default function CandidateDashboard() {
   const [appliedJobs, setAppliedJobs] = useState([]);
   const [recommendedJobs, setRecommendedJobs] = useState([]);
 
-  // Fetch applied jobs from backend
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -35,13 +34,11 @@ export default function CandidateDashboard() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
 
-      {/* Welcome Section */}
       <div className="bg-indigo-600 text-white p-8 rounded-xl shadow">
         <h1 className="text-3xl font-bold">Welcome, {user.name}</h1>
         <p className="mt-2 text-lg">Your candidate dashboard overview</p>
       </div>
 
-      {/* Profile Quick Info */}
       <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-lg font-semibold">Profile</h2>
@@ -65,7 +62,6 @@ export default function CandidateDashboard() {
         </div>
       </div>
 
-      {/* Applied Jobs Section */}
       <h2 className="text-2xl font-bold mt-14 mb-4 text-indigo-700">Your Applied Jobs</h2>
 
       {appliedJobs.length === 0 ? (
@@ -82,7 +78,6 @@ export default function CandidateDashboard() {
         </div>
       )}
 
-      {/* Recommended Jobs */}
       <h2 className="text-2xl font-bold mt-14 mb-4 text-indigo-700">Recommended for You</h2>
 
       {recommendedJobs.length === 0 ? (

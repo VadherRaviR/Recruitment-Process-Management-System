@@ -4,16 +4,17 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RMP_backend;
 using System.Text;
-using RMP_backend.Mappings;
-using RMP_backend.Repositories;
-using RMP_backend.Services;
+ using RMP_backend.Repositories;
+ using RMP_backend.Services;
+ using Microsoft.Extensions.FileProviders;
+
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddScoped<IJobRepository, JobRepository>();
-builder.Services.AddScoped<IJobService, JobService>();
-
-builder.Services.AddAutoMapper(typeof(JobProfile)); // ensure mapping assembly is found
+ builder.Services.AddScoped<IJobService, JobService>();
+builder.Services.AddScoped<ISkillService, SkillService>();
+builder.Services.AddScoped<ICandidateService, CandidateService>();
 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -97,6 +98,15 @@ app.UseCors("AllowFrontend");
 
 app.UseAuthentication(); 
 app.UseAuthorization();
+app.UseStaticFiles(); 
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "Uploads")),
+    RequestPath = "/Uploads"
+});
+
 app.MapControllers();
 
 app.Run();

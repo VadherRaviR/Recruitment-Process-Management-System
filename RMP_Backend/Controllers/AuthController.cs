@@ -62,7 +62,6 @@ public async Task<IActionResult> Register(RegisterDto dto)
     });
     await _context.SaveChangesAsync();
 
-    // ✅ If user is Candidate, create entry in Candidates table
     if (dto.RoleName.Equals("Candidate", StringComparison.OrdinalIgnoreCase))
     {
         var candidate = new Candidate
@@ -118,6 +117,7 @@ public async Task<IActionResult> Register(RegisterDto dto)
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                new Claim(ClaimTypes.Email, user.Email),
                 new Claim("id", user.UserId.ToString()),
                 new Claim(ClaimTypes.Role, role),
                 new Claim(ClaimTypes.Name, user.FullName)

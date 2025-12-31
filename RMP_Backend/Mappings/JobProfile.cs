@@ -8,24 +8,21 @@ namespace RMP_backend.Mappings
     {
         public JobProfile()
         {
-            CreateMap<JobCreateDto, Job>()
-                .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
-                .ForMember(dest => dest.JobSkills, opt => opt.Ignore())
-                .ForMember(dest => dest.CandidateJobLinks, opt => opt.Ignore())
-                .ForMember(dest => dest.Interviews, opt => opt.Ignore())
-                .ForMember(dest => dest.OfferLetters, opt => opt.Ignore());
+            CreateMap<JobRequiredSkill, SkillResponseDto>()
+                .ForMember(d => d.SkillId, o => o.MapFrom(s => s.SkillId))
+                .ForMember(d => d.SkillName, o => o.MapFrom(s => s.Skill.Name))
+                .ForMember(d => d.Weightage, o => o.MapFrom(s => s.Weightage));
 
-            CreateMap<JobUpdateDto, Job>()
-                .ForMember(dest => dest.JobId, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedById, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
-                .ForMember(dest => dest.JobSkills, opt => opt.Ignore());
+            CreateMap<JobPreferredSkill, SkillResponseDto>()
+                .ForMember(d => d.SkillId, o => o.MapFrom(s => s.SkillId))
+                .ForMember(d => d.SkillName, o => o.MapFrom(s => s.Skill.Name))
+                .ForMember(d => d.Weightage, o => o.MapFrom(s => s.Weightage));
 
             CreateMap<Job, JobResponseDto>()
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-                .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy != null ? src.CreatedBy.FullName : string.Empty))
-                .ForMember(dest => dest.ApplicantsCount, opt => opt.Ignore()); // we'll set it in service
+                .ForMember(d => d.RequiredSkills, o => o.MapFrom(s => s.RequiredSkills))
+                .ForMember(d => d.PreferredSkills, o => o.MapFrom(s => s.PreferredSkills))
+                .ForMember(d => d.CreatedByName, o => o.MapFrom(s => s.CreatedBy != null ? s.CreatedBy.FullName : string.Empty))
+                .ForMember(d => d.CreatedById, o => o.MapFrom(s => s.CreatedById));
         }
     }
 }

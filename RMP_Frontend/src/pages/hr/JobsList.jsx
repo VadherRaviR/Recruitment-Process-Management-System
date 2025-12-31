@@ -8,7 +8,7 @@ export default function JobsList() {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await api.get("/jobs"); // GET /jobs
+        const res = await api.get("/jobs"); 
         setJobs(res.data || []);
       } catch (err) {
         console.error("Load jobs error", err);

@@ -17,10 +17,7 @@ export default function HRDashboard() {
   useEffect(() => {
     const load = async () => {
       try {
-        // expected backend endpoints:
-        // GET /hr/dashboard/stats
-        // GET /hr/candidates/recent
-        // GET /hr/interviews/recent
+       
         const [sRes, cRes, iRes] = await Promise.all([
           api.get("/hr/dashboard/stats"),
           api.get("/hr/candidates/recent"),

@@ -10,7 +10,7 @@ export default function AddJob() {
     description: "",
     department: "",
     experienceRequired: "",
-    skills: "" // Comma separated: JS, React, SQL
+    skills: "" 
   });
 
   const [error, setError] = useState("");
@@ -32,7 +32,6 @@ export default function AddJob() {
         .map((s) => s.trim())
         .filter((s) => s.length > 0);
 
-      // Backend DTO structure
       const payload = {
         title: form.title,
         description: form.description,
@@ -41,7 +40,8 @@ export default function AddJob() {
         createdById: decoded.id,
         skills: skillList
       };
-
+    
+      console.log(payload);
       await api.post("/jobs", payload);
 
       navigate("/hr/jobs");

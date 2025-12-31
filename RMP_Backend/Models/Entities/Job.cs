@@ -27,20 +27,18 @@ namespace RMP_backend.Models.Entities
 
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
-        public ICollection<JobSkill> JobSkills { get; set; }
+    
+        public ICollection<JobRequiredSkill> RequiredSkills { get; set; }
+
+        
+        public ICollection<JobPreferredSkill> PreferredSkills { get; set; }
+
         public ICollection<CandidateJobLink> CandidateJobLinks { get; set; }
         public ICollection<Interview> Interviews { get; set; }
         public ICollection<OfferLetter> OfferLetters { get; set; }
     }
 
-    public class JobSkill
-    {
-        public int JobId { get; set; }
-        public Job Job { get; set; }
+   
 
-        public int SkillId { get; set; }
-        public Skill Skill { get; set; }
-
-        public int Importance { get; set; }
-    }
+  
 }

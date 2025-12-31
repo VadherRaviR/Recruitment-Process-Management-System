@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\RAVI R VADHER\\Desktop\\PreTask\\project\\rmp_backend\\RMP_Backend.csproj": {}
+    "C:\\Users\\RAVI R VADHER\\Desktop\\PreTask\\Project\\RMP_Backend\\RMP_Backend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\RAVI R VADHER\\Desktop\\PreTask\\project\\rmp_backend\\RMP_Backend.csproj": {
+    "C:\\Users\\RAVI R VADHER\\Desktop\\PreTask\\Project\\RMP_Backend\\RMP_Backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\RAVI R VADHER\\Desktop\\PreTask\\project\\rmp_backend\\RMP_Backend.csproj",
+        "projectUniqueName": "C:\\Users\\RAVI R VADHER\\Desktop\\PreTask\\Project\\RMP_Backend\\RMP_Backend.csproj",
         "projectName": "RMP_Backend",
-        "projectPath": "C:\\Users\\RAVI R VADHER\\Desktop\\PreTask\\project\\rmp_backend\\RMP_Backend.csproj",
+        "projectPath": "C:\\Users\\RAVI R VADHER\\Desktop\\PreTask\\Project\\RMP_Backend\\RMP_Backend.csproj",
         "packagesPath": "C:\\Users\\RAVI R VADHER\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\RAVI R VADHER\\Desktop\\PreTask\\project\\rmp_backend\\obj\\",
+        "outputPath": "C:\\Users\\RAVI R VADHER\\Desktop\\PreTask\\Project\\RMP_Backend\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

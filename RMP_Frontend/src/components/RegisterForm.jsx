@@ -12,7 +12,7 @@ export default function RegisterForm() {
     email: "",
     phone: "",
     password: "",
-    roleName: "Admin"   // ✅ auto-assign role
+    roleName: "Admin"   
   });
 
   const [error, setError] = useState("");
@@ -69,7 +69,6 @@ export default function RegisterForm() {
           className="w-full border p-2 rounded mb-4"
         />
 
-        {/* Optional: Role input */}
         <select
           name="roleName"
           onChange={handleChange}

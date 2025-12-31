@@ -9,7 +9,7 @@ export default function CandidateDetail() {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await api.get(`/hr/candidates/${id}`); // GET /hr/candidates/:id
+        const res = await api.get(`/hr/candidates/${id}`); 
         setCandidate(res.data);
       } catch (err) {
         console.error("Load candidate detail", err);

@@ -23,8 +23,8 @@ export default function ScheduleInterview() {
     const load = async () => {
       try {
         const [iRes, jRes] = await Promise.all([
-          api.get("/users?role=Interviewer"), // GET all interviewers
-          api.get("/jobs") // GET jobs
+          api.get("/users?role=Interviewer"), 
+          api.get("/jobs") 
         ]);
         setInterviewers(iRes.data || []);
         setJobs(jRes.data || []);
@@ -41,7 +41,7 @@ export default function ScheduleInterview() {
     e.preventDefault();
     setSaving(true);
     try {
-      // POST /hr/interviews/schedule
+      
       await api.post("/hr/interviews/schedule", form);
       navigate("/hr/interviews");
     } catch (err) {

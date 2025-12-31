@@ -8,7 +8,7 @@ export default function OfferManagement() {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await api.get("/hr/offers"); // GET /hr/offers
+        const res = await api.get("/hr/offers"); 
         setOffers(res.data || []);
       } catch (err) {
         console.error("Load offers error", err);

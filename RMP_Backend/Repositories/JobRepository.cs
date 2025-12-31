@@ -1,59 +1,48 @@
 using Microsoft.EntityFrameworkCore;
 using RMP_backend.Models.Entities;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace RMP_backend.Repositories
 {
     public class JobRepository : IJobRepository
     {
-        private readonly AppDbContext _db;
-
-        public JobRepository(AppDbContext db)
+        private readonly AppDbContext _context;
+        public JobRepository(AppDbContext context)
         {
-            _db = db;
+            _context = context;
+        }
+
+        public async Task<Job> AddAsync(Job job)
+        {
+            _context.Jobs.Add(job);
+            await _context.SaveChangesAsync();
+            return job;
+        }
+
+        public async Task<Job> GetByIdWithSkillsAsync(int id)
+        {
+            return await _context.Jobs
+                .Include(j => j.RequiredSkills).ThenInclude(rs => rs.Skill)
+                .Include(j => j.PreferredSkills).ThenInclude(ps => ps.Skill)
+                .FirstOrDefaultAsync(j => j.JobId == id);
         }
 
         public async Task<IEnumerable<Job>> GetAllAsync()
         {
-            return await _db.Jobs
-                .Include(j => j.CreatedBy)
-                .OrderByDescending(j => j.CreatedDate)
+            return await _context.Jobs
+                .Include(j => j.RequiredSkills).ThenInclude(rs => rs.Skill)
+                .Include(j => j.PreferredSkills).ThenInclude(ps => ps.Skill)
                 .ToListAsync();
         }
 
-        public async Task<Job> GetByIdAsync(int id)
+        public async Task UpdateAsync(Job job)
         {
-            return await _db.Jobs
-                .Include(j => j.CreatedBy)
-                .Include(j => j.CandidateJobLinks)
-                .FirstOrDefaultAsync(j => j.JobId == id);
+            _context.Jobs.Update(job);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task AddAsync(Job job)
+        public async Task SaveChangesAsync()
         {
-            await _db.Jobs.AddAsync(job);
-        }
-
-        public void Update(Job job)
-        {
-            _db.Jobs.Update(job);
-        }
-
-        public void Remove(Job job)
-        {
-            _db.Jobs.Remove(job);
-        }
-
-        public async Task<int> GetApplicantsCountAsync(int jobId)
-        {
-            return await _db.CandidateJobLinks.CountAsync(cj => cj.JobId == jobId);
-        }
-
-        public async Task<bool> SaveChangesAsync()
-        {
-            return (await _db.SaveChangesAsync()) > 0;
+            await _context.SaveChangesAsync();
         }
     }
 }
