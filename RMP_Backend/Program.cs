@@ -7,6 +7,8 @@ using System.Text;
  using RMP_backend.Repositories;
  using RMP_backend.Services;
  using Microsoft.Extensions.FileProviders;
+ using Microsoft.AspNetCore.Http.Features;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -83,6 +85,11 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod()
             .AllowCredentials());
 });
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 50 * 1024 * 1024;
+});
+
 
 var app = builder.Build();
 
@@ -106,6 +113,12 @@ app.UseStaticFiles(new StaticFileOptions
         Path.Combine(builder.Environment.ContentRootPath, "Uploads")),
     RequestPath = "/Uploads"
 });
+app.Use(async (context, next) =>
+{
+    context.Request.EnableBuffering();
+    await next();
+});
+
 
 app.MapControllers();
 

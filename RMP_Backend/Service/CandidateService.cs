@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using RMP_backend.Models.DTOs.Candidates;
 using RMP_backend.Models.Entities;
 using RMP_backend.Models.Enums;
+using ClosedXML.Excel;
+
 
 namespace RMP_backend.Services
 {
@@ -137,5 +139,131 @@ namespace RMP_backend.Services
 
             return $"Uploads/Resumes/{fileName}";
         }
+
+
+        public async Task<BulkUploadResultDto> BulkUploadForJobAsync(
+    IFormFile excel,
+    List<IFormFile> resumes,
+    int jobId)
+{
+    var result = new BulkUploadResultDto();
+
+    // 1️⃣ Validate Job
+    var job = await _context.Jobs.FindAsync(jobId);
+    if (job == null)
+        throw new Exception("Job not found");
+
+    if (job.Status != EntityStatus.Open)
+        throw new Exception("Job is not open");
+
+    // 2️⃣ Resume map
+    var resumeMap = resumes.ToDictionary(
+        r => r.FileName,
+        r => r,
+        StringComparer.OrdinalIgnoreCase);
+
+    // 3️⃣ Read Excel
+    using var stream = excel.OpenReadStream();
+    using var workbook = new XLWorkbook(stream);
+    var sheet = workbook.Worksheet("Candidates");
+
+    var rows = sheet.RangeUsed().RowsUsed().Skip(1);
+    result.TotalRows = rows.Count();
+
+    foreach (var row in rows)
+    {
+        try
+        {
+            var fullName = row.Cell(1).GetString().Trim();
+            var email = row.Cell(2).GetString().Trim();
+            var phone = row.Cell(3).GetString().Trim();
+            double.TryParse(row.Cell(4).GetString(), out var experience);
+            var resumeName = row.Cell(5).GetString().Trim();
+            var source = row.Cell(6).GetString().Trim();
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                result.Skipped++;
+                continue;
+            }
+
+            // 4️⃣ Find or Create Candidate
+            var candidate = await _context.Candidates
+                .FirstOrDefaultAsync(c => c.Email == email);
+
+            var isNew = false;
+
+            if (candidate == null)
+            {
+                candidate = new Candidate
+                {
+                    FullName = fullName,
+                    Email = email,
+                    Phone = phone,
+                    ExperienceYears = experience,
+                    Status = CandidateStatus.Screening
+                };
+
+                _context.Candidates.Add(candidate);
+                await _context.SaveChangesAsync(); // get CandidateId
+                isNew = true;
+            }
+            else
+            {
+                candidate.FullName = fullName;
+                candidate.Phone = phone;
+                candidate.ExperienceYears = experience;
+            }
+
+            // 5️⃣ Save Resume
+            if (!string.IsNullOrWhiteSpace(resumeName) &&
+                resumeMap.TryGetValue(resumeName, out var resumeFile))
+            {
+                candidate.ResumePath =
+                    await SaveResumeAsync(resumeFile, candidate.CandidateId);
+            }
+
+            await _context.SaveChangesAsync();
+
+            // 6️⃣ Link Candidate to Job
+            var alreadyApplied = await _context.CandidateJobLinks.AnyAsync(cj =>
+                cj.JobId == jobId &&
+                cj.CandidateId == candidate.CandidateId);
+
+            if (!alreadyApplied)
+            {
+                _context.CandidateJobLinks.Add(new CandidateJobLink
+                {
+                    JobId = jobId,
+                    CandidateId = candidate.CandidateId,
+                    Status = CandidateStatus.Screening,
+                    Source = source
+                });
+
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                result.Skipped++;
+                continue;
+            }
+
+            if (isNew) result.Created++;
+            else result.Updated++;
+        }
+        catch (Exception ex)
+        {
+            result.Failed++;
+            result.Errors.Add(new BulkUploadErrorDto
+            {
+                Row = row.RowNumber(),
+                Email = row.Cell(2).GetString(),
+                Error = ex.Message
+            });
+        }
+    }
+
+    return result;
+}
     }
 }

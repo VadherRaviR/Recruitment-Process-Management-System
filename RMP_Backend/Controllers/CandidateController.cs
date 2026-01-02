@@ -55,5 +55,24 @@ namespace RMP_backend.Controllers
             await _service.UpdateProfileAsync(email, dto);
             return Ok(new { message = "Profile updated successfully" });
         }
+
+        //bullk upload
+        [HttpPost("bulk-upload-job")]
+        [Authorize(Roles = "Recruiter,HR,Admin")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> BulkUploadForJob(
+           [FromForm] BulkUploadJobRequestDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _service.BulkUploadForJobAsync(
+                dto.Excel,
+                dto.Resumes ?? new List<IFormFile>(),
+                dto.JobId
+            );
+
+            return Ok(result);
+        }
     }
 }

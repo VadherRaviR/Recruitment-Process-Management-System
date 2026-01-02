@@ -252,7 +252,7 @@ namespace RMP_backend.Services
             int candidateId,
             UpdateCandidateStatusDto dto)
         {
-            //  Validate Job
+            
             var job = await _context.Jobs
                 .AsNoTracking()
                 .FirstOrDefaultAsync(j => j.JobId == jobId);
@@ -263,7 +263,7 @@ namespace RMP_backend.Services
             // if (job.CreatedById != recruiterId)
             //     throw new UnauthorizedAccessException("You are not allowed to modify this job");
 
-            // Validate Application
+            // Validate Application 
             var application = await _context.CandidateJobLinks
                 .FirstOrDefaultAsync(cj =>
                     cj.JobId == jobId &&
@@ -272,7 +272,6 @@ namespace RMP_backend.Services
             if (application == null)
                 throw new KeyNotFoundException("Candidate application not found");
 
-            //  Parse & Validate Status
             if (!Enum.TryParse<CandidateStatus>(
                     dto.Status,
                     ignoreCase: true,
@@ -281,7 +280,6 @@ namespace RMP_backend.Services
                 throw new ArgumentException("Invalid candidate status");
             }
 
-            // Rejection requires reason
             if (newStatus == CandidateStatus.Rejected &&
                 string.IsNullOrWhiteSpace(dto.Reason))
             {
@@ -293,10 +291,8 @@ namespace RMP_backend.Services
             if (oldStatus == newStatus)
                 return;
 
-            // Update Status
             application.Status = newStatus;
 
-            //  Status History
             _context.StatusHistories.Add(new StatusHistory
             {
                 EntityType = "CandidateJob",

@@ -9,5 +9,7 @@ namespace RMP_backend.Services
         Task<CandidateProfileDto> GetProfileAsync(string email);
 
         Task UpdateProfileAsync(string email, UpdateCandidateProfileDto dto);
+        Task<BulkUploadResultDto> BulkUploadForJobAsync(IFormFile excel,List<IFormFile> resumes, int jobId
+        );
     }
 }
