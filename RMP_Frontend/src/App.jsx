@@ -25,7 +25,7 @@ import OpenJobsList from "./pages/OpenJobList";
 import CandidateProfile from "./pages/candidate/CandidateProfile";
 import JobApplicants from "./pages/recruiter/JobApplicant";
 import CandidateProfileForRecruiter from "./pages/recruiter/CandidateProfileForRecruiter";
-
+import InterviewerDashboard from "./pages/interview/InterviewerDashboard";
 
 
 
@@ -57,6 +57,8 @@ function App() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+                <Route path="/interviwer/Dashbord" element={<InterviewerDashboard />} />
+
         <Route path="/recruiter/jobs/:jobId/applications" element={<JobApplicants />} />
         <Route
           path="/recruiter/jobs/:jobId/applications/:candidateId"

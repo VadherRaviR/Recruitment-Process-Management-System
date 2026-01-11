@@ -19,12 +19,8 @@ namespace RMP_backend.Models.Enums
         Rejected = 6
     }
 
-    public enum InterviewMode
-    {
-        Online = 0,
-        Offline = 1,
-        Phone = 2
-    }
+    
+ 
 
     public enum Recommendation
     {

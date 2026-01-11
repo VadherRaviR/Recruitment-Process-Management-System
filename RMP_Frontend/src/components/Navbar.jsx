@@ -21,7 +21,7 @@ export default function Navbar() {
             alt="Logo"
             className="w-10 h-10"
           />
-          <h1 className="text-xl font-bold text-indigo-700">RMPS</h1>
+          <h1 className="text-xl font-bold text-indigo-700">RPMS</h1>
         </Link>
 
         <div className="flex gap-6 text-gray-700 font-medium">

@@ -180,7 +180,7 @@ export default function CandidateProfile() {
       <Section title="Resume">
         {profile.resumePath ? (
           <a
-            href={`${import.meta.env.VITE_API_BASE_URL}/${profile.resumePath}`}
+            href={`http://localhost:5266/${profile.resumePath}`}
             target="_blank"
             rel="noreferrer"
             className="text-blue-600 underline block mb-3"

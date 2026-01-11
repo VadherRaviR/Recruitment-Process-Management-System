@@ -51,7 +51,6 @@ namespace RMP_backend.Services
 
             if (skill == null) return false;
 
-            // Prevent deleting skills used by jobs
             if (skill.JobRequiredSkills.Any() || skill.JobPreferredSkills.Any())
                 throw new Exception("Skill is used in jobs and cannot be deleted");
 

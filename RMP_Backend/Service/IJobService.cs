@@ -11,16 +11,16 @@ namespace RMP_backend.Services
         Task<IEnumerable<JobResponseDto>> GetAllAsync();
          Task<IEnumerable<JobApplicantDto>> GetApplicantsAsync(int recruiterId, int jobId);
 
+
     Task<CandidateProfileForRecruiterDto> GetApplicantProfileAsync(
         int recruiterId,
         int jobId,
         int candidateId);
 
-        Task UpdateCandidateStatusAsync(
-    int recruiterId,
-    int jobId,
-    int candidateId,
-    UpdateCandidateStatusDto dto);
-
-    }
+    Task UpdateCandidateStatusAsync(
+        int recruiterId,
+        int jobId,
+        int candidateId,
+        UpdateCandidateStatusDto dto);
+}
 }

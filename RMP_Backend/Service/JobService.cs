@@ -38,7 +38,6 @@ namespace RMP_backend.Services
 
             await _repo.AddAsync(job);
 
-            // handle required skills (ensure skill exists)
             foreach (var s in dto.RequiredSkills ?? Enumerable.Empty<SkillWithImportanceDto>())
             {
                 var skill = await EnsureSkillExistsAsync(s.SkillId);
@@ -50,7 +49,7 @@ namespace RMP_backend.Services
                 });
             }
 
-            // handle preferred skills
+            // handle preferred skillss
             foreach (var s in dto.PreferredSkills ?? Enumerable.Empty<SkillWithImportanceDto>())
             {
                 var skill = await EnsureSkillExistsAsync(s.SkillId);
@@ -205,46 +204,75 @@ namespace RMP_backend.Services
         }
 
 
-        public async Task<CandidateProfileForRecruiterDto> GetApplicantProfileAsync(
-            int recruiterId,
-            int jobId,
-            int candidateId)
+       public async Task<CandidateProfileForRecruiterDto> GetApplicantProfileAsync(
+    int recruiterId,
+    int jobId,
+    int candidateId)
+{
+    var application = await _context.CandidateJobLinks
+        .Include(cj => cj.Candidate)
+            .ThenInclude(c => c.CandidateSkills)
+                .ThenInclude(cs => cs.Skill)
+        .FirstOrDefaultAsync(cj =>
+            cj.JobId == jobId &&
+            cj.CandidateId == candidateId);
+
+    if (application == null)
+        throw new KeyNotFoundException("Application not found");
+
+ 
+    var interviews = await _context.Interviews
+        .Where(i => i.JobId == jobId && i.CandidateId == candidateId)
+        .Include(i => i.InterviewPanels)
+            .ThenInclude(p => p.Interviewer)
+        .AsNoTracking()
+        .ToListAsync();
+
+ 
+    var history = await _context.StatusHistories
+        .Where(h => h.EntityType == "CandidateJob" && h.EntityId == jobId)
+        .Include(h => h.UpdatedBy)
+        .OrderBy(h => h.UpdatedDate)
+        .AsNoTracking()
+        .ToListAsync();
+
+    return new CandidateProfileForRecruiterDto
+    {
+        CandidateId = application.CandidateId,
+        FullName = application.Candidate.FullName,
+        Email = application.Candidate.Email,
+        Phone = application.Candidate.Phone,
+        ExperienceYears = application.Candidate.ExperienceYears,
+        ResumePath = application.Candidate.ResumePath,
+        ApplicationStatus = application.Status.ToString(),
+
+        Skills = application.Candidate.CandidateSkills
+            .Select(cs => cs.Skill.Name)
+            .ToList(),
+
+        Timeline = history.Select(h => new StatusHistoryDto
         {
-            var job = await _context.Jobs
-                .AsNoTracking()
-                .FirstOrDefaultAsync(j => j.JobId == jobId);
+            OldStatus = h.OldStatus,
+            NewStatus = h.NewStatus,
+            UpdatedDate = h.UpdatedDate,
+            UpdatedBy = h.UpdatedBy.Email
+        }).ToList(),
 
-            if (job == null)
-                throw new KeyNotFoundException("Job not found");
+        Interviews = interviews.Select(i => new InterviewSummaryDto
+        {
+            InterviewId = i.InterviewId,
+            RoundType = i.RoundType,
+            Mode = i.Mode.ToString(),
+            ScheduledAt = i.ScheduledAt,
+            Status = i.Status.ToString(),
+            Location = i.Location,
+            PanelMembers = i.InterviewPanels
+                .Select(p => p.Interviewer.Email)
+                .ToList()
+        }).ToList()
+    };
+}
 
-            // if (job.CreatedById != recruiterId)
-            //     throw new UnauthorizedAccessException("Not allowed");
-
-            var application = await _context.CandidateJobLinks
-                .Include(cj => cj.Candidate)
-                    .ThenInclude(c => c.CandidateSkills)
-                        .ThenInclude(cs => cs.Skill)
-                .FirstOrDefaultAsync(cj =>
-                    cj.JobId == jobId &&
-                    cj.CandidateId == candidateId);
-
-            if (application == null)
-                throw new KeyNotFoundException("Application not found");
-
-            return new CandidateProfileForRecruiterDto
-            {
-                CandidateId = application.CandidateId,
-                FullName = application.Candidate.FullName,
-                Email = application.Candidate.Email,
-                Phone = application.Candidate.Phone,
-                ExperienceYears = application.Candidate.ExperienceYears,
-                ResumePath = application.Candidate.ResumePath,
-                ApplicationStatus = application.Status.ToString(),
-                Skills = application.Candidate.CandidateSkills
-                    .Select(cs => cs.Skill.Name)
-                    .ToList()
-            };
-        }
 
         public async Task UpdateCandidateStatusAsync(
             int recruiterId,
@@ -263,7 +291,6 @@ namespace RMP_backend.Services
             // if (job.CreatedById != recruiterId)
             //     throw new UnauthorizedAccessException("You are not allowed to modify this job");
 
-            // Validate Application 
             var application = await _context.CandidateJobLinks
                 .FirstOrDefaultAsync(cj =>
                     cj.JobId == jobId &&

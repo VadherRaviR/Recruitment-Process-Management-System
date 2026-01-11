@@ -82,7 +82,6 @@ export default function JobApplicants() {
                     </select>
                   </td>
 
-                  {/* ===== RESUME ===== */}
                   <td className="px-4 py-2 text-center">
                     {a.resumePath ? (
                       <a

@@ -10,182 +10,209 @@ export default function JobDetails() {
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [nextStatus, setNextStatus] = useState("");
   const [reason, setReason] = useState("");
   const [filled, setFilled] = useState(false);
   const [closedCandidateId, setClosedCandidateId] = useState("");
-  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    api
-      .get(`/jobs/${id}`)
+    api.get(`/jobs/${id}`)
       .then(res => setJob(res.data))
-      .catch(() => setJob(null))
       .finally(() => setLoading(false));
   }, [id]);
 
   if (loading) return <div className="p-6">Loading...</div>;
   if (!job) return <div className="p-6">Job not found</div>;
 
-  const openStatusModal = (status) => {
+  const openModal = (status) => {
     setNextStatus(status);
     setReason("");
     setFilled(false);
     setClosedCandidateId("");
-    setShowStatusModal(true);
+    setShowModal(true);
   };
 
- const submitStatusChange = async () => {
-  try {
-    setSubmitting(true);
-
+  const submit = async () => {
     const payload = { status: nextStatus };
-
-    if (nextStatus === "OnHold") {
-      payload.reason = reason;
-    }
-
+    if (nextStatus === "OnHold") payload.reason = reason;
     if (nextStatus === "Closed") {
       payload.filled = filled;
-      if (filled) {
-        payload.closedCandidateId = Number(closedCandidateId);
-      } else {
-        payload.reason = reason;
-      }
+      filled
+        ? payload.closedCandidateId = Number(closedCandidateId)
+        : payload.reason = reason;
     }
 
     await api.put(`/jobs/${id}/status`, payload);
-
-    alert("Job status updated");
     setJob({ ...job, status: nextStatus });
-    setShowStatusModal(false);
-  } catch (err) {
-    alert(err.response?.data?.message || "Failed to update job status");
-  } finally {
-    setSubmitting(false);
-  }
-};
-
+    setShowModal(false);
+  };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
 
-      <div className="flex justify-between items-start">
-        <div>
-          <h2 className="text-3xl font-semibold">{job.title}</h2>
-          <p className="text-gray-600">{job.department}</p>
-        </div>
-        <StatusBadge status={job.status} />
-      </div>
+{/* ===== HEADER ===== */}
+<div className="space-y-2">
+  <div className="flex items-center gap-3">
+    <h1 className="text-2xl font-semibold text-gray-900">
+      {job.title}
+    </h1>
+    <StatusBadge status={job.status} />
+  </div>
 
-\      {job.status !== "Open" && (
-        <div className="p-4 rounded border bg-yellow-50">
-          <div className="font-medium mb-1">
-            Job is currently <b>{job.status}</b>
-          </div>
-
-          {job.status === "Closed" && (
-            <div className="text-sm text-gray-700">
-              This position is closed.
-              <br />
-              {job.closedCandidateId
-                ? `Filled by candidate ID: ${job.closedCandidateId}`
-                : "Closed without filling the position."}
-            </div>
-          )}
-
-          {job.status === "OnHold" && (
-            <div className="text-sm text-gray-700">
-              This job is temporarily on hold.
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className="bg-white p-6 rounded shadow space-y-4">
-        <div>
-          <h4 className="font-semibold">Description</h4>
-          <p className="text-gray-700 mt-1">{job.description}</p>
-        </div>
-
-        <div>
-          <h4 className="font-semibold">Required Skills</h4>
-          <ul className="list-disc pl-6 text-sm">
-            {(job.requiredSkills || []).map(rs => (
-              <li key={rs.skillId}>{rs.skillName}</li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="font-semibold">Preferred Skills</h4>
-          <ul className="list-disc pl-6 text-sm">
-            {(job.preferredSkills || []).map(ps => (
-              <li key={ps.skillId}>{ps.skillName}</li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div className="flex gap-3 pt-4 flex-wrap">
-  <button
-    onClick={() => navigate(`/recruiter/jobs/edit/${id}`)}
-    className="px-4 py-2 border rounded"
-  >
-    Edit
-  </button>
-
-  {job.status === "Open" && (
-    <>
-      <button
-        onClick={() => openStatusModal("OnHold")}
-        className="px-4 py-2 border rounded"
-      >
-        Put On Hold
-      </button>
-
-      <button
-        onClick={() => openStatusModal("Closed")}
-        className="px-4 py-2 bg-red-600 text-white rounded"
-      >
-        Close Job
-      </button>
-    </>
-  )}
-
-  {job.status === "OnHold" && (
-    <>
-      <button
-        onClick={() => openStatusModal("Open")}
-        className="px-4 py-2 bg-green-600 text-white rounded"
-      >
-        Re-Open Job
-      </button>
-
-      <button
-        onClick={() => openStatusModal("Closed")}
-        className="px-4 py-2 bg-red-600 text-white rounded"
-      >
-        Close Job
-      </button>
-    </>
-  )}
+  <div className="text-sm text-gray-500 flex flex-wrap gap-x-4">
+    <span>Department: {job.department}</span>
+    <span>
+      Created on: {new Date(job.createdDate).toLocaleDateString()}
+    </span>
+    {job.createdByName && (
+      <span>Created by: {job.createdByName}</span>
+    )}
+  </div>
 </div>
 
+      {/* ===== ACTION BAR ===== */}
+      <div className="flex flex-wrap gap-3 border-b pb-4">
+        <button
+          onClick={() => navigate(`/recruiter/jobs/edit/${id}`)}
+          className="px-3 py-1.5 text-sm border rounded hover:bg-gray-50"
+        >
+          Edit
+        </button>
 
-      {showStatusModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded w-96 space-y-4">
-            <h3 className="text-lg font-semibold">
-              Change Job Status → {nextStatus}
+        {job.status === "Open" && (
+          <>
+            <button
+              onClick={() => openModal("OnHold")}
+              className="px-3 py-1.5 text-sm border rounded hover:bg-gray-50"
+            >
+              Put on hold
+            </button>
+
+            <button
+              onClick={() => openModal("Closed")}
+              className="px-3 py-1.5 text-sm text-red-600 border border-red-300 rounded hover:bg-red-50"
+            >
+              Close job
+            </button>
+          </>
+        )}
+
+        {job.status === "OnHold" && (
+          <>
+            <button
+              onClick={() => openModal("Open")}
+              className="px-3 py-1.5 text-sm text-green-700 border border-green-300 rounded hover:bg-green-50"
+            >
+              Re-open job
+            </button>
+
+            <button
+              onClick={() => openModal("Closed")}
+              className="px-3 py-1.5 text-sm text-red-600 border border-red-300 rounded hover:bg-red-50"
+            >
+              Close job
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* ===== STATUS INFO ===== */}
+{job.status !== "Open" && (
+  <div className="border-l-4 p-4 bg-gray-50 text-sm"
+       style={{
+         borderColor:
+           job.status === "Closed" ? "#dc2626" : "#f59e0b"
+       }}>
+    {job.status === "OnHold" && (
+      <>
+        <div className="font-medium text-gray-800">
+          This job is currently on hold
+        </div>
+        {job.holdReason && (
+          <div className="text-gray-600 mt-1">
+            Reason: {job.holdReason}
+          </div>
+        )}
+      </>
+    )}
+
+    {job.status === "Closed" && (
+      <>
+        <div className="font-medium text-gray-800">
+          This job has been closed
+        </div>
+
+        {job.closedCandidateId ? (
+          <div className="text-gray-600 mt-1">
+            Position filled by candidate ID:{" "}
+            <b>{job.closedCandidateId}</b>
+          </div>
+        ) : (
+          <div className="text-gray-600 mt-1">
+            Closed without filling the position
+          </div>
+        )}
+
+        {job.closedReason && (
+          <div className="text-gray-600 mt-1">
+            Reason: {job.closedReason}
+          </div>
+        )}
+      </>
+    )}
+  </div>
+)}
+
+
+      {/* ===== DESCRIPTION ===== */}
+      <section className="space-y-2">
+        <h3 className="text-sm font-semibold text-gray-900 uppercase">
+          Description
+        </h3>
+        <p className="text-gray-700 leading-relaxed">
+          {job.description}
+        </p>
+      </section>
+
+      {/* ===== SKILLS ===== */}
+      <section className="space-y-4">
+        <div>
+          <h3 className="text-sm font-semibold text-gray-900 uppercase">
+            Required skills
+          </h3>
+          <ul className="list-disc pl-5 text-gray-700 text-sm">
+            {job.requiredSkills?.map(s => (
+              <li key={s.skillId}>{s.skillName}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-semibold text-gray-900 uppercase">
+            Preferred skills
+          </h3>
+          <ul className="list-disc pl-5 text-gray-700 text-sm">
+            {job.preferredSkills?.map(s => (
+              <li key={s.skillId}>{s.skillName}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ===== MODAL ===== */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+          <div className="bg-white w-96 rounded-lg p-6 space-y-4">
+            <h3 className="text-lg font-medium">
+              Change status → {nextStatus}
             </h3>
 
             <textarea
-              placeholder="Enter reason"
               value={reason}
               onChange={e => setReason(e.target.value)}
-              className="w-full border rounded p-2"
+              placeholder="Reason (required)"
+              className="w-full border rounded p-2 text-sm"
             />
 
             {nextStatus === "Closed" && (
@@ -202,26 +229,25 @@ export default function JobDetails() {
                 {filled && (
                   <input
                     type="number"
-                    placeholder="Closed Candidate ID"
+                    placeholder="Candidate ID"
                     value={closedCandidateId}
                     onChange={e => setClosedCandidateId(e.target.value)}
-                    className="w-full border rounded p-2"
+                    className="w-full border rounded p-2 text-sm"
                   />
                 )}
               </>
             )}
 
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-2 pt-2">
               <button
-                onClick={() => setShowStatusModal(false)}
-                className="px-4 py-2 border rounded"
+                onClick={() => setShowModal(false)}
+                className="px-4 py-1.5 text-sm border rounded"
               >
                 Cancel
               </button>
               <button
-                disabled={submitting}
-                onClick={submitStatusChange}
-                className="px-4 py-2 bg-indigo-600 text-white rounded"
+                onClick={submit}
+                className="px-4 py-1.5 text-sm bg-indigo-600 text-white rounded"
               >
                 Confirm
               </button>

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -6,7 +7,6 @@ using RMP_backend;
 using System.Text;
  using RMP_backend.Repositories;
  using RMP_backend.Services;
- using Microsoft.Extensions.FileProviders;
  using Microsoft.AspNetCore.Http.Features;
 
 
@@ -17,6 +17,8 @@ builder.Services.AddScoped<IJobRepository, JobRepository>();
  builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<ISkillService, SkillService>();
 builder.Services.AddScoped<ICandidateService, CandidateService>();
+builder.Services.AddScoped<IInterviewService, InterviewService>();
+builder.Services.AddScoped<IInterviewFeedbackService, InterviewFeedbackService>();
 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -102,6 +104,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "Uploads")),
+    RequestPath = "/uploads"
+});
 
 app.UseAuthentication(); 
 app.UseAuthorization();

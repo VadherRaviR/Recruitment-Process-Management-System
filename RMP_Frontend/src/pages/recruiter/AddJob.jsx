@@ -36,7 +36,6 @@ export default function AddJob() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // payload must match JobCreateDto
       await api.post("/jobs", {
         title: form.title,
         description: form.description,
