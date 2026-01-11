@@ -127,15 +127,27 @@ Controllers → Services → Repositories → DbContext
 
 ### Jobs
 - `POST /api/jobs`
-- `PUT /api/jobs/{id}`
-- `PUT /api/jobs/{id}/status`
 - `GET /api/jobs`
+- `PUT /api/jobs/{id}`
 - `GET /api/jobs/{id}`
+- `PUT /api/jobs/{id}/status`
+- `GET /api/Jobs/{id}/applications`
+- `GET /api/Jobs/{jobId}/applications/{candidateId}`
+- `PUT /api/Jobs/{jobId}/applications/{candidateId}/status`
 
 ### Candidates
 - `POST /api/candidates/apply`
 - `GET /api/candidates/profile`
-
+- `PUT /api/Candidates/profile`
+- `POSt /api/Candidates/bulk-upload-job`
+  
+### Skill
+- `POST /api/Skill `
+- `GET /api/Skill`
+- `PUT /api/Skill/{id}`
+- `DELETE /api/Skill/{id}`
+- `GET /api/Skill/{id}`
+  
 ### Recruiter
 - `GET /api/jobs/{id}/applications`
 - `GET /api/jobs/{jobId}/applications/{candidateId}`
@@ -150,6 +162,8 @@ Completed:
 - Job lifecycle
 - Candidate applications
 - Recruiter screening
+- Bulk candidate upload (Excel)
+
 
 Next planned modules:
 - Reporting & dashboards
@@ -164,6 +178,5 @@ Next planned modules:
 - Interview rounds & panels
 - Email notifications
 - Analytics & reports
-- Bulk candidate upload (Excel)
 - Automated skill matching
 - Employee records module
